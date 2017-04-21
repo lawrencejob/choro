@@ -6,16 +6,20 @@ var start = Date.now();
 
 console.log("Opening");
 
-var lsoa = gdal.open("X:\\Data\\Geography\\2011 LSOAs Clipped Generalised\\Lower_Layer_Super_Output_Areas_December_2011_Generalised_Clipped__Boundaries_in_England_and_Wales.shp");
+var wgs84_wkt = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]';
+var lsoa = gdal.open("C:\\Users\\lawrence.job\\Downloads\\Lower_Layer_Super_Output_Areas_December_2011_Generalised_Clipped__Boundaries_in_England_and_Wales\\Lower_Layer_Super_Output_Areas_December_2011_Generalised_Clipped__Boundaries_in_England_and_Wales.shp");
 
 var layer = lsoa.layers.get(0);
 
 console.log("number of features: " + layer.features.count());
-console.log("fields: " + layer.fields.getNames());
-console.log("extent: " + JSON.stringify(layer.extent));
-console.log("srs: " + (layer.srs ? layer.srs.toWKT() : 'null'));
 
-indexGeographyLayer("LSOA", layer);
+var lsoa_promise = indexGeographyLayer("LSOA", layer);
+
+console.log("Promise made");
+
+Promise.all([lsoa_promise]).then(function(gi) {
+    global_index["LSOA"] = gi;
+});
 
 console.log("Closing");
 
@@ -25,38 +29,36 @@ console.info("Done in: " + (Date.now() - start) + " ms.");
 
 function indexGeographyLayer(type, layer) {
 
-    global_index[type] = {};
+    return new Promise(function(resolve, reject) {
 
-    var errors = 0;
+        console.log("promise running");
 
-    layer.features.forEach(function(val, index) {
+        var gi = {};
 
-        var name = "name";
-        var north = null, west = null, south = null, east = null;
+        var errors = 0;
 
-        var bounds = val.getGeometry().boundary();
+        layer.features.forEach(function(val, index) {
 
-        if(!bounds.points) {
+            var name = "name" + Math.random();
+            var north = null, west = null, south = null, east = null;
 
-            //console.log(val.fields.toObject());
-            console.log(bounds);
-            errors++;
-            return;
-        }
+            var geometry = val.getGeometry();
 
-        // this can't be that efficient
-        var points = bounds.points.toArray();
+            geometry.transformTo(gdal.SpatialReference.fromWKT(wgs84_wkt));
 
-        for( var i in points ) {
+            gi[name] = {
+                "maxX":geometry.getEnvelope().maxX,
+                "minX":geometry.getEnvelope().minX,
+                "maxY":geometry.getEnvelope().maxY,
+                "minY":geometry.getEnvelope().minY,
+                "name":name,
+                "geometry":geometry
+            }
 
-            //console.log(points[i]);
-        }
+        });
 
-        //console.log(bounds);
-
-        //global_index[type]
-    });
-
-    console.error(errors);
+        resolve(gi);
+    
+    })
 
 }

@@ -1,5 +1,5 @@
 {
-  "name": "map-engine",
+  "name": "choro",
   "version": "0.0.1",
   "description": "Vector geography server for choropleth maps",
   "main": "index.js",
@@ -8,6 +8,10 @@
   },
   "author": "Lawrence Job",
   "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lawrencejob/choro.git"
+  },
   "dependencies": {
     "gdal": "^0.9.4"
   }

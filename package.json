@@ -13,6 +13,7 @@
     "url": "https://github.com/lawrencejob/choro.git"
   },
   "dependencies": {
-    "gdal": "^0.9.4"
+    "gdal": "^0.9.4",
+    "restify": "^4.3.0"
   }
 }

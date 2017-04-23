@@ -3,7 +3,6 @@ var restify = require ("restify");
 const AreaIndex = require ("./area-index.js").AreaIndex;
 const LayerImporter = require ("./layer-importer.js").LayerImporter;
 
-var global_index = {};
 var area_index = new AreaIndex();
 
 var server = restify.createServer();
@@ -91,7 +90,7 @@ load_all_layers.then(() => {
                 var output_entity = {
                     code: areas[i].id,
                     name: areas[i].name,
-                    geo: areas[i].geometry.toJSON()
+                    geo: areas[i].geometry_json
                 };
 
                 output.push(output_entity);

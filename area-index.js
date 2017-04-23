@@ -38,7 +38,8 @@ class AreaIndex {
                 "minY":gdal_geometry.getEnvelope().minY,
                 "name":name,
                 "id":id,
-                "geometry":gdal_geometry
+                "geometry":gdal_geometry,
+                "geometry_json" : gdal_geometry.toJSON()
             }
             
         });
